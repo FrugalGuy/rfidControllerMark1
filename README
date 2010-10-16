@@ -1,0 +1,4 @@
+
+This is the first incarnation of an Arduino-based RFID controller for an electric door strike.
+This version does not do data logging or refer to an off-controller database for access control information.
+Instead, RFID cards are registered directly at the reader.
