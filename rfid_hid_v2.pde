@@ -1,12 +1,16 @@
 /*
   RFID Door Lock
-  10APR2010, 27Aug2010
+  10APR2010, 17Oct2010
   Ron Craig
   roncraig007@gmail.com
   
   This sketch implements a controller for an RFID door lock system.
-  It reads 125 KHz RFID cards and sends a signal to unlock a 
+  It reads RFID cards and sends a signal to unlock a 
   door if the presented card is a valid card stored in EEPROM.
+  
+  The script currently can interface with HID card readers using Wiegand26
+  protocol or with Innovations' ID-12 or ID-20 readers configured for 
+  serial ASCII protocol.  The latter reads 125 KHz RFID cards / keyfobs.
   
   Additional features:
   1) System begins in 'factory default' mode. This is a 'virgin'
@@ -43,19 +47,20 @@
   cards. This is useful if you lose the Master card. Hold optional
   controller reset button for around 5 seconds.
   2) Device can be returned to factory default mode by pressing the 
-  optional reset button for 30 seconds.
-  2) Stealth option allows you to add your own RFID card to the
-  controller without having the Master card. Warning: Evil
+  optional reset button for 15 seconds.
+  2) Stealth option (not implemented) allows you to add your own RFID 
+  card to the controller without having the Master card. Warning: Evil
   
   DEVELOPMENT FEATURES
   1) Define a debug flag to get serial debug output.
   
-  FUTURE
+  FUTURE POSSIBILITIES
   Data logging via wireless or HDSD card or enet/USB connector.
   Command line over serial to query and edit RFID database.
   IP web service interface for querying remote RFID db.
   
-  HARDWARE CONFIGURATION
+  HARDWARE CONFIGURATIONS
+  * Homegrown DIY using ID-12 or ID-20 RFID Reader
   I suggest two PCBs, one for the RFID reader and indicator lights 
   outside the door and a second for the controller inside. 
   Connect reader serial and light control lines to controller 
@@ -64,6 +69,11 @@
   controller board to the door lock to prevent jumping. If you
   are providing a factory reset switch, some means of access to 
   the switch needs to be provided.
+  * ProxPoint Plus Proximity Reader with Wiegand Output Model 6005
+  For this you just need the interior controller connected to
+  the reader outside the door, and power from the controller to
+  the door lock.
+
   
   COMPONENTS
   Mini SPST Push Button momentary reset switch (COM-00097 $0.35)
@@ -112,8 +122,8 @@
 //#undef DEBUG
 
 // Define if your device speaks wiegand26. Undefine otherwise.
-#define wiegand
-//#undef wiegand
+//#define wiegand
+#undef wiegand
 
 
 #include <EEPROM.h>
@@ -124,7 +134,7 @@
 #endif
 
 // Version display. Visible with debug output
-#define VERSION "RFID Controller V4 20100827 (c) Ron Craig 2010"
+#define VERSION "RFID Controller V5 20101018 (c) Ron Craig 2010"
 
 #ifdef DEBUG
 #define DEBUGPRINT(...) {Serial.print(__VA_ARGS__);}
@@ -741,8 +751,9 @@ void DUMPEEPROM(int start, int len)
      Serial.println(EEPROM.read(start), HEX);
      for (int i = start+1; i < start+len; i++)
      {
-       Serial.print(" "); Serial.println(EEPROM.read(i), HEX);
+       Serial.print(" "); Serial.print(EEPROM.read(i), HEX);
      }
+     Serial.println();
   }
 #endif
 }
@@ -767,12 +778,14 @@ boolean cardPresent()
 #else
 boolean cardPresent()
 {
-      if (Serial.available() > 0)
-      {
-        if ( (val = Serial.read()) == 2 )
-        {
-          return true;
-        }
-      }
+  byte val = 0;
+  if (Serial.available() > 0)
+  {
+    if ( (val = Serial.read()) == 2 )
+    {
+      return true;
+    }
+  }
+  return false;
 }
 #endif
