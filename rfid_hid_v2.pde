@@ -402,13 +402,13 @@ void pgmModeOn()
   digitalWrite(failPin,  LOW);
   digitalWrite(passPin,  HIGH);
   delay(200);
+  digitalWrite(passPin,  LOW);
   digitalWrite(powerPin, LOW);
   digitalWrite(failPin,  HIGH);
-  digitalWrite(passPin,  LOW);
   delay(200);
-  digitalWrite(powerPin, HIGH);
   digitalWrite(failPin,  LOW);
   digitalWrite(passPin,  LOW);
+  digitalWrite(powerPin, HIGH);
   delay(200);
 }//pgmModeOn
 
@@ -425,12 +425,15 @@ void getID()
   readCard[3] = (byte)r >>  8 & 0xff;
   readCard[4] = (byte)r       & 0xff;
   readCard[5] = checksum;
+#ifdef DEBUG
   Serial.print("RFID Read:");
   for (int i = 0; i < sizeof(readCard); i++)
   {
     Serial.print(" ");
     Serial.print(readCard[i], HEX);
   }
+  Serial.println();
+#endif
 }
 #else
 void getID()
@@ -559,9 +562,9 @@ void addID(byte a[])
 // set LEDs for normal operation
 void normalModeOn()
 {
-  digitalWrite(powerPin, HIGH);
-  //digitalWrite(passPin,  LOW); puts door open indicator at half-bright
   digitalWrite(failPin,  LOW);
+  //digitalWrite(passPin,  LOW); puts door open indicator at half-bright
+  digitalWrite(powerPin, HIGH);
 }//normalModeOn
 
 // flash failure LED
