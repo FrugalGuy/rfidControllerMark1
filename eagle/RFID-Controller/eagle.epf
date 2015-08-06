@@ -325,10 +325,10 @@ UsedLibrary="C:/tools/EAGLE-5.10.0/lbr/zilog.lbr"
 
 [Win_1]
 Type="Control Panel"
-Loc="29 40 849 541"
+Loc="34 224 792 739"
 State=2
 Number=0
 
 [Desktop]
-Screen="1680 1050"
+Screen="1920 1200"
 Window="Win_1"
