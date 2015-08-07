@@ -2,3 +2,81 @@
 This is the first incarnation of an Arduino-based RFID controller for an electric door strike.
 This version does not do data logging or refer to an off-controller database for access control information.
 Instead, RFID cards are registered directly at the reader.
+
+
+  The sketch implements a controller for an RFID door lock system.
+  It reads RFID cards and sends a signal to unlock a 
+  door if the presented card is a valid card stored in EEPROM.
+        
+  The script currently can interface with HID card readers using Wiegand26
+  protocol or with Innovations' ID-12 or ID-20 readers configured for 
+  serial ASCII protocol.  The latter reads 125 KHz RFID cards / keyfobs.
+   
+  Additional features:
+  1) System begins in 'factory default' mode. This is a 'virgin'
+     state with no stored cards. When in this mode, lights flash in 
+     a frenetic way. The first RFID card read after installation
+     will become the 'master card' and factory default mode is exited.
+     This little feature means you can burn tons of these chips and
+     you don't need to hard-code any RFIDs. Suitable for shipping!
+       
+  2) Master card (first card read after installation) also opens
+     the door, so you can just use that card for every day access
+     instead of having to stash it somewhere.
+        
+  3) You can enter programming mode at any time with the Master card.
+     To do this, you swipe the master card twice within a few seconds.
+     First time opens the door, and second time (if door is still 
+     unlocked) puts you in programming mode. You get sequential flashing 
+     lights to indicate you are in programming mode.
+    
+  4) While in programming mode you can add any number of additional
+     cards to the EEPROM. You can also remove any number of 
+     cards from EEPROM while in this mode. You get a blinking green for
+     adds and a blinking red for deletes. Previously unauthorized cards 
+     will be added and authorized cards will be deleted. You exit 
+     programming mode by swiping the master card again or after a period
+     of inactivity.
+			    
+  5) Master card and other cards get a green/red light indicating
+     pass/fail when trying to open the door.
+
+  OPTIONAL FEATURES
+  1) Master Swap option allows you to change the Master without
+     resetting to factory default mode and erasing the additional
+     cards. This is useful if you lose the Master card. Hold optional
+     controller reset button for around 5 seconds.
+  2) Device can be returned to factory default mode by pressing the 
+     optional reset button for 15 seconds.
+  3) Stealth option (not implemented) allows you to add your own RFID 
+     card to the controller without having the Master card. Warning: Evil
+			      
+  DEVELOPMENT FEATURES
+  1) Define a debug flag to get serial debug output.
+
+  FUTURE POSSIBILITIES
+  Data logging via wireless or HDSD card or enet/USB connector.
+  Command line over serial to query and edit RFID database.
+  IP web service interface for querying remote RFID db.
+								      
+  HARDWARE CONFIGURATIONS
+  * Homegrown DIY using ID-12 or ID-20 RFID Reader
+    I suggest two PCBs, one for the RFID reader and indicator lights 
+    outside the door and a second for the controller inside. 
+    Connect reader serial and light control lines to controller 
+    located in a secure location (inside the access-controlled area). 
+    Power for the door lock should be routed securely from the
+    controller board to the door lock to prevent jumping. If you
+    are providing a factory reset switch, some means of access to 
+    the switch needs to be provided.
+  * ProxPoint Plus Proximity Reader with Wiegand Output Model 6005
+    For this you just need the interior controller connected to
+    the reader outside the door, and power from the controller to
+    the door lock.
+
+
+  I've included Eagle files for the controller board and 
+  Eagle files for the reader board for the ID-12/ID-20 chip
+  configured for ASCII protocol.  You won't need the reader
+  board if you're using a purchased HID Wiegand reader.
+

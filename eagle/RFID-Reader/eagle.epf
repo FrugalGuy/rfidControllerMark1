@@ -361,15 +361,16 @@ ArcDirection=0
 AddLevel=2
 PadsSameType=0
 Layer=91
+Views=" 1: 71921 135312 2668559 2071408"
 Sheet=1
 
 [Win_2]
 Type="Control Panel"
-Loc="27 27 780 426"
+Loc="34 224 792 739"
 State=2
 Number=0
 
 [Desktop]
-Screen="1680 1050"
+Screen="1920 1200"
 Window="Win_1"
 Window="Win_2"
